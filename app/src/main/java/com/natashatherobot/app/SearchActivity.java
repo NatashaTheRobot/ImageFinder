@@ -1,6 +1,7 @@
 package com.natashatherobot.app;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
@@ -42,6 +44,15 @@ public class SearchActivity extends ActionBarActivity {
         setupViews();
         imageAdapter = new ImageResultArrayAdapter(this, imageResults);
         gvResults.setAdapter(imageAdapter);
+        gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(getApplicationContext(), ImageDisplayActivity.class);
+                ImageResult imageResult = imageResults.get(position);
+                i.putExtra("url", imageResult.getFullUrl());
+                startActivity(i);
+            }
+        });
     }
 
 
