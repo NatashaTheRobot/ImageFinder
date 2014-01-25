@@ -49,7 +49,7 @@ public class SearchActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(getApplicationContext(), ImageDisplayActivity.class);
                 ImageResult imageResult = imageResults.get(position);
-                i.putExtra("url", imageResult.getFullUrl());
+                i.putExtra("result", imageResult);
                 startActivity(i);
             }
         });
@@ -85,7 +85,7 @@ public class SearchActivity extends ActionBarActivity {
         Toast.makeText(this, "Searching for " + query, Toast.LENGTH_LONG)
                 .show();
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get("https://ajax.googleapis.com/ajax/services/search/images?rsz=8&start=" + 0 + "&v=1.0&q=" + Uri.encode(query),
+        client.get("https://ajax.googleapis.com/ajax/services/search/images?rsz=8&as_filetype=png&start=" + 0 + "&v=1.0&q=" + Uri.encode(query),
                 new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(JSONObject response) {

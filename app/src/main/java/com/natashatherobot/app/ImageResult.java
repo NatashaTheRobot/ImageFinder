@@ -4,13 +4,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
 /**
  * Created by Natasha Murashev on 1/25/14.
  */
-public class ImageResult {
+public class ImageResult implements Serializable {
+    private static final long serialVersionUID = 4943136125505956011L;
     private String fullUrl;
     private String thumbUrl;
     private String title;
