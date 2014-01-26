@@ -61,7 +61,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/sprColorFilter"
                 android:layout_alignBottom="@+id/tvFilterColor"
-                android:layout_alignStart="@+id/sprImageSize" />
+                android:layout_alignStart="@+id/sprImageSize"
+                android:layout_alignParentEnd="true"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -78,7 +79,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/sprImageType"
                 android:layout_alignBottom="@+id/tvFilterImageType"
-                android:layout_alignStart="@+id/sprImageSize" />
+                android:layout_alignStart="@+id/sprImageSize"
+                android:layout_alignParentEnd="true"/>
 
             <TextView
                 android:layout_width="wrap_content"
