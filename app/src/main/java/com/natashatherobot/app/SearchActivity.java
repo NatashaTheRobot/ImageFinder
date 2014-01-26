@@ -36,6 +36,7 @@ public class SearchActivity extends ActionBarActivity {
     Button btnSearch;
     ArrayList<ImageResult> imageResults = new ArrayList<ImageResult>();
     ImageResultArrayAdapter imageAdapter;
+    String query;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,16 +44,7 @@ public class SearchActivity extends ActionBarActivity {
         setContentView(R.layout.activity_search);
         setupViews();
         imageAdapter = new ImageResultArrayAdapter(this, imageResults);
-        gvResults.setAdapter(imageAdapter);
-        gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(getApplicationContext(), ImageDisplayActivity.class);
-                ImageResult imageResult = imageResults.get(position);
-                i.putExtra("result", imageResult);
-                startActivity(i);
-            }
-        });
+        configureGridView();
     }
 
 
@@ -81,21 +73,53 @@ public class SearchActivity extends ActionBarActivity {
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(etQuery.getWindowToken(), 0);
 
-        String query = etQuery.getText().toString();
-        Toast.makeText(this, "Searching for " + query, Toast.LENGTH_LONG)
+        query = etQuery.getText().toString();
+        Toast.makeText(this, "Searching for " + query, Toast.LENGTH_SHORT)
                 .show();
+        imageResults.clear();
+        performSearch(0);
+    }
+
+    private void setupViews() {
+        etQuery = (EditText) findViewById(R.id.etQuery);
+        gvResults = (GridView) findViewById(R.id.gvResults);
+        btnSearch = (Button) findViewById(R.id.btnSearch);
+    }
+
+    private void configureGridView() {
+        imageAdapter = new ImageResultArrayAdapter(this, imageResults);
+        gvResults.setAdapter(imageAdapter);
+        gvResults.setOnScrollListener(new EndlessScrollListener() {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to your AdapterView
+                //  customLoadMoreDataFromApi(page);
+                customLoadMoreDataFromApi(totalItemsCount);
+            }
+        });
+        gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(getApplicationContext(), ImageDisplayActivity.class);
+                ImageResult imageResult = imageResults.get(position);
+                i.putExtra("result", imageResult);
+                startActivity(i);
+            }
+        });
+    }
+
+    private void performSearch(int offset) {
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get("https://ajax.googleapis.com/ajax/services/search/images?rsz=8&as_filetype=png&start=" + 0 + "&v=1.0&q=" + Uri.encode(query),
+        client.get("https://ajax.googleapis.com/ajax/services/search/images?rsz=8&as_filetype=png&start=" + offset + "&v=1.0&q=" + Uri.encode(query),
                 new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(JSONObject response) {
                         JSONArray imageJsonResults = null;
                         try {
                             imageJsonResults = response.getJSONObject("responseData").getJSONArray("results");
-                            imageResults.clear();
                             imageResults.addAll(ImageResult.fromJSONArray(imageJsonResults));
                             imageAdapter.notifyDataSetChanged();
-                            Log.d("DEBUG", imageResults.toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -103,9 +127,11 @@ public class SearchActivity extends ActionBarActivity {
                 });
     }
 
-    private void setupViews() {
-        etQuery = (EditText) findViewById(R.id.etQuery);
-        gvResults = (GridView) findViewById(R.id.gvResults);
-        btnSearch = (Button) findViewById(R.id.btnSearch);
+    // Append more data into the adapter
+    private void customLoadMoreDataFromApi(int offset) {
+        // This method probably sends out a network request and appends new data items to your adapter.
+        // Use the offset value and add it as a parameter to your API request to retrieve paginated data.
+        // Deserialize API response and then construct new objects to append to the adapter
+        performSearch(offset);
     }
 }
