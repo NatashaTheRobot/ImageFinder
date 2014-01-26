@@ -12,12 +12,13 @@ import android.view.ViewGroup;
 import android.os.Build;
 
 public class FilterActivity extends ActionBarActivity {
+    QueryFilter filter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter);
-
+        filter = (QueryFilter) getIntent().getSerializableExtra("filter");
     }
 
 

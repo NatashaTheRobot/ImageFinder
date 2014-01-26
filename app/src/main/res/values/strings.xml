@@ -8,6 +8,6 @@
     <string name="query_hint">Enter Search Term</string>
     <string name="title_activity_image_display">ImageDisplayActivity</string>
     <string name="filter">Filter</string>
-    <string name="title_activity_filter">FilterActivity</string>
+    <string name="title_activity_filter">FilterActivity</string><string name="searchOptionsHeader">Advanced Search Options</string><string name="filterImageSize">Image Size</string><string name="filterColor">Color</string><string name="filterImageType">Image Type</string><string name="filterSite">Site</string>
 
 </resources>
