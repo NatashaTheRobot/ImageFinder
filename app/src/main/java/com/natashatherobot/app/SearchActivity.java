@@ -23,12 +23,15 @@ import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SearchActivity extends ActionBarActivity {
     EditText etQuery;
@@ -37,6 +40,7 @@ public class SearchActivity extends ActionBarActivity {
     ArrayList<ImageResult> imageResults = new ArrayList<ImageResult>();
     ImageResultArrayAdapter imageAdapter;
     String query;
+    QueryFilter filter = new QueryFilter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +54,6 @@ public class SearchActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.search, menu);
         return true;
@@ -58,14 +61,20 @@ public class SearchActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.miFilter:
+                displayFilterActivity();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
+    }
+
+    private void displayFilterActivity() {
+        Intent i = new Intent(SearchActivity.this, FilterActivity.class);
+        i.putExtra("filter", filter);
+        startActivity(i);
     }
 
     public void onImageSearch(View v) {
@@ -111,6 +120,41 @@ public class SearchActivity extends ActionBarActivity {
 
     private void performSearch(int offset) {
         AsyncHttpClient client = new AsyncHttpClient();
+        String baseUrl = "https://ajax.googleapis.com/ajax/services/search/images?";
+
+        RequestParams parameters = new RequestParams();
+        parameters.add("rsz", "8");
+        parameters.add("as_filetype", "png");
+        parameters.add("start", Integer.toString(offset));
+        parameters.add("v", "1.0");
+        parameters.add("q", Uri.encode(query));
+        if (filter.getSize() != null) {
+            parameters.add("imgsz", filter.getSize());
+        }
+        if (filter.getColor() != null) {
+            parameters.add("imgcolor", filter.getColor());
+        }
+        if (filter.getType() != null) {
+            parameters.add("imgtype", filter.getType());
+        }
+        if (filter.getSite() != null) {
+            parameters.add("as_sitesearch", filter.getSite());
+        }
+
+        client.get(baseUrl, parameters, new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(JSONObject response) {
+                JSONArray imageJsonResults = null;
+                try {
+                    imageJsonResults = response.getJSONObject("responseData").getJSONArray("results");
+                    imageResults.addAll(ImageResult.fromJSONArray(imageJsonResults));
+                    imageAdapter.notifyDataSetChanged();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
         client.get("https://ajax.googleapis.com/ajax/services/search/images?rsz=8&as_filetype=png&start=" + offset + "&v=1.0&q=" + Uri.encode(query),
                 new JsonHttpResponseHandler() {
                     @Override
