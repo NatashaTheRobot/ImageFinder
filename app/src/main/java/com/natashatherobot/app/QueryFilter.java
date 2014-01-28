@@ -19,6 +19,10 @@ public class QueryFilter implements Serializable {
     private ArrayList<String> types;
 
     public QueryFilter() {
+        size = "all";
+        color = "all";
+        type = "all";
+
         configureSizes();
         configureColors();
         configureTypes();
@@ -69,7 +73,8 @@ public class QueryFilter implements Serializable {
     }
 
     private void configureColors() {
-        colors = new ArrayList<String>(11);
+        colors = new ArrayList<String>(12);
+        colors.add("any");
         colors.add("black");
         colors.add("blue");
         colors.add("brown");
@@ -84,7 +89,8 @@ public class QueryFilter implements Serializable {
     }
 
     private void configureSizes() {
-        sizes = new ArrayList<String>(7);
+        sizes = new ArrayList<String>(8);
+        sizes.add("any");
         sizes.add("icon");
         sizes.add("small");
         sizes.add("medium");
@@ -96,6 +102,7 @@ public class QueryFilter implements Serializable {
 
     private void configureTypes() {
         types = new ArrayList<String>(4);
+        types.add("any");
         types.add("clipart");
         types.add("face");
         types.add("lineart");

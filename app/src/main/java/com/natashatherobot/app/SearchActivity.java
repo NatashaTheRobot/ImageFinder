@@ -32,6 +32,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Filter;
 
 public class SearchActivity extends ActionBarActivity {
     EditText etQuery;
@@ -41,6 +42,7 @@ public class SearchActivity extends ActionBarActivity {
     ImageResultArrayAdapter imageAdapter;
     String query;
     QueryFilter filter = new QueryFilter();
+    private final int REQUEST_CODE = 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,10 +73,17 @@ public class SearchActivity extends ActionBarActivity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
+            filter = (QueryFilter) data.getSerializableExtra("filter");
+        }
+    }
+
     private void displayFilterActivity() {
         Intent i = new Intent(SearchActivity.this, FilterActivity.class);
         i.putExtra("filter", filter);
-        startActivity(i);
+        startActivityForResult(i, REQUEST_CODE);
     }
 
     public void onImageSearch(View v) {
@@ -113,7 +122,7 @@ public class SearchActivity extends ActionBarActivity {
                 Intent i = new Intent(getApplicationContext(), ImageDisplayActivity.class);
                 ImageResult imageResult = imageResults.get(position);
                 i.putExtra("result", imageResult);
-                startActivity(i);
+                startActivityForResult(i, REQUEST_CODE);
             }
         });
     }
@@ -128,13 +137,13 @@ public class SearchActivity extends ActionBarActivity {
         parameters.add("start", Integer.toString(offset));
         parameters.add("v", "1.0");
         parameters.add("q", Uri.encode(query));
-        if (filter.getSize() != null) {
+        if (filter.getSize() != "all") {
             parameters.add("imgsz", filter.getSize());
         }
-        if (filter.getColor() != null) {
+        if (filter.getColor() != "all") {
             parameters.add("imgcolor", filter.getColor());
         }
-        if (filter.getType() != null) {
+        if (filter.getType() != "all") {
             parameters.add("imgtype", filter.getType());
         }
         if (filter.getSite() != null) {
